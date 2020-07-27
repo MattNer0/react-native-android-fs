@@ -1,0 +1,25 @@
+{
+  "name": "react-native-android-fs",
+  "version": "1.2.2",
+  "description": "React Native Android module to access the storage",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "react-component",
+    "file-system",
+    "storage",
+    "android"
+  ],
+  "author": "MattNer0",
+  "license": "MIT",
+  "repository": "https://github.com/MattNer0/react-native-android-fs",
+  "bugs": "https://github.com/MattNer0/react-native-android-fs/issues",
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}
