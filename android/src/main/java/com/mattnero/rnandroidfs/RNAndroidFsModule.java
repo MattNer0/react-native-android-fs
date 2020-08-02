@@ -117,6 +117,31 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void writeTextFile(String path, String content, final Promise promise) {
+        DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
+        if (pickedFile.isFile()) {
+            OutputStream os = null;
+            StringBuilder result = new StringBuilder();
+            try {
+                os = this.reactContext.getContentResolver().openOutputStream(uri);
+                BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os));
+                w.write(content);
+                w.flush();
+                w.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try { if (os != null) os.close(); } catch (IOException e) { }
+                promise.resolve(content);
+            }
+        }
+
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void exists(String path, final Promise promise) {
         DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
         promise.resolve(pickedFile.exists());
@@ -128,6 +153,22 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
             DocumentFile newDir = pickedFile.createDirectory(newDirName);
             promise.resolve(newDir.getUri().toString());
+            return;
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void touch(String path, String newFileName, String mimeType, final Promise promise) {
+        try {
+            DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
+            DocumentFile newFile = pickedFile.createFile(mimeType, newFileName);
+            promise.resolve(newFile.getUri().toString());
             return;
         } catch (UnsupportedOperationException e) {
             e.printStackTrace();
