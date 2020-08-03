@@ -98,6 +98,11 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void readTextFile(String path, final Promise promise) {
+        if (path == null) {
+            promise.reject("NullPointerException", "Path is null");
+            return;
+        }
+
         DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
         if (pickedFile.isFile()) {
             InputStream is = null;
@@ -109,21 +114,26 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
                 while ((line = r.readLine()) != null) {
                     result.append(line);
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
                 try { if (is != null) is.close(); } catch (IOException e) { }
                 promise.resolve(result.toString());
+            } catch (FileNotFoundException e) {
+                promise.reject("FileNotFoundException", e.getMessage());
+            } catch (IOException e) {
+                promise.reject("IOException", e.getMessage());
             }
+            return;
         }
 
-        promise.resolve(null);
+        promise.reject("FileNotFoundException", "Path is not a valid file");
     }
 
     @ReactMethod
     public void writeTextFile(String path, String content, final Promise promise) {
+        if (path == null) {
+            promise.reject("NullPointerException", "Path is null");
+            return;
+        }
+
         DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
         if (pickedFile.isFile()) {
             OutputStream os = null;
@@ -134,17 +144,19 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
                 w.write(content);
                 w.flush();
                 w.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
+
                 try { if (os != null) os.close(); } catch (IOException e) { }
                 promise.resolve(content);
+
+            } catch (FileNotFoundException e) {
+                promise.reject("FileNotFoundException", e.getMessage());
+            } catch (IOException e) {
+                promise.reject("IOException", e.getMessage());
             }
+            return;
         }
 
-        promise.resolve(null);
+        promise.reject("FileNotFoundException", "Path is not a valid file");
     }
 
     @ReactMethod
@@ -161,9 +173,9 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             promise.resolve(newDir.getUri().toString());
             return;
         } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
+            promise.reject("UnsupportedOperationException", e.getMessage());
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            promise.reject("NullPointerException", e.getMessage());
         }
 
         promise.resolve(null);
@@ -177,9 +189,9 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             promise.resolve(newFile.getUri().toString());
             return;
         } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
+            promise.reject("UnsupportedOperationException", e.getMessage());
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            promise.reject("NullPointerException", e.getMessage());
         }
 
         promise.resolve(null);
@@ -193,9 +205,9 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             promise.resolve(pickedFile.getUri().toString());
             return;
         } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
+            promise.reject("UnsupportedOperationException", e.getMessage());
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            promise.reject("NullPointerException", e.getMessage());
         }
 
         promise.resolve(null);
