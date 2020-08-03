@@ -17,6 +17,12 @@ import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 //import android.provider.DocumentsContract;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -97,7 +103,7 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             InputStream is = null;
             StringBuilder result = new StringBuilder();
             try {
-                is = this.reactContext.getContentResolver().openInputStream(uri);
+                is = this.reactContext.getContentResolver().openInputStream(pickedFile.getUri());
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while ((line = r.readLine()) != null) {
@@ -123,7 +129,7 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
             OutputStream os = null;
             StringBuilder result = new StringBuilder();
             try {
-                os = this.reactContext.getContentResolver().openOutputStream(uri);
+                os = this.reactContext.getContentResolver().openOutputStream(pickedFile.getUri());
                 BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os));
                 w.write(content);
                 w.flush();
@@ -183,7 +189,7 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
     public void rename(String path, String newName, final Promise promise) {
         try {
             DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
-            pickedFile.renameTo(newName)
+            pickedFile.renameTo(newName);
             promise.resolve(pickedFile.getUri().toString());
             return;
         } catch (UnsupportedOperationException e) {
