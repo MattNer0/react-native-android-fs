@@ -32,6 +32,9 @@ var AndroidFs = {
         }
         return RNAndroidFs.touch(path, file, mime);
     },
+    rename(path, name) {
+        return RNAndroidFs.rename(path, name);
+    },
     requestIgnoreBatteryOptimizations() {
         return RNAndroidFs.requestIgnoreBatteryOptimizations();
     },

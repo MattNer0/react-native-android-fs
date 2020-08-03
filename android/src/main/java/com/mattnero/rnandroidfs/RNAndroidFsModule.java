@@ -180,6 +180,22 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void rename(String path, String newName, final Promise promise) {
+        try {
+            DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
+            pickedFile.renameTo(newName)
+            promise.resolve(pickedFile.getUri().toString());
+            return;
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void requestIgnoreBatteryOptimizations(final Promise promise) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) this.reactContext.getSystemService(Context.POWER_SERVICE);
