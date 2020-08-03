@@ -2,7 +2,6 @@
  * @providesModule AndroidFs
  */
 
-var mime = require('mime-types')
 var { NativeModules } = require("react-native");
 var RNAndroidFs = NativeModules.AndroidFs || {};
 
@@ -26,10 +25,6 @@ var AndroidFs = {
         return RNAndroidFs.mkdir(path, dir);
     },
     touch(path, file, mime) {
-        if (mime === undefined) {
-            const fileParse = file.match(/(.+?)(\.[^.]*$|$)/)
-            return RNAndroidFs.touch(path, fileParse[1], mime.lookup(fileParse[2]));
-        }
         return RNAndroidFs.touch(path, file, mime);
     },
     rename(path, name) {
