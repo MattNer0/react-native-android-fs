@@ -113,6 +113,7 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
                 String line;
                 while ((line = r.readLine()) != null) {
                     result.append(line);
+                    result.append("\n");
                 }
                 try { if (is != null) is.close(); } catch (IOException e) { }
                 promise.resolve(result.toString());
