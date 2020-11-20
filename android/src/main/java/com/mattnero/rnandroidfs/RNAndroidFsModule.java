@@ -70,9 +70,9 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         try {
             Activity currentActivity = getCurrentActivity();
-            currentActivity.startActivityForResult(intent,DIRECTORY_SELECT_CODE);
+            currentActivity.startActivityForResult(intent, DIRECTORY_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
-
+            callback.invoke("");
         }
     }
 
@@ -215,6 +215,21 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void delete(String path, final Promise promise) {
+        try {
+            DocumentFile pickedFile = DocumentFile.fromTreeUri(this.reactContext, Uri.parse(path));
+            promise.resolve(pickedFile.delete());
+            return;
+        } catch (UnsupportedOperationException e) {
+            promise.reject("UnsupportedOperationException", e.getMessage());
+        } catch (NullPointerException e) {
+            promise.reject("NullPointerException", e.getMessage());
+        }
+
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void requestIgnoreBatteryOptimizations(final Promise promise) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) this.reactContext.getSystemService(Context.POWER_SERVICE);
@@ -250,12 +265,14 @@ public class RNAndroidFsModule extends ReactContextBaseJavaModule {
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
         @Override
         public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            if (requestCode == DIRECTORY_SELECT_CODE && data!=null) {
-                Uri treeUri = data.getData();
-                reactContext.grantUriPermission(reactContext.getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                reactContext.getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            if (requestCode == DIRECTORY_SELECT_CODE && resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri treeUri = data.getData();
+                    reactContext.grantUriPermission(reactContext.getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    reactContext.getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-                mCallback.invoke(treeUri.toString());
+                    mCallback.invoke(treeUri.toString());
+                }
             }
         }
     };

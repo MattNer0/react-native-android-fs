@@ -30,6 +30,9 @@ var AndroidFs = {
     rename(path, name) {
         return RNAndroidFs.rename(path, name);
     },
+    delete(path) {
+        return RNAndroidFs.delete(path);
+    },
     requestIgnoreBatteryOptimizations() {
         return RNAndroidFs.requestIgnoreBatteryOptimizations();
     },
